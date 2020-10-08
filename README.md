@@ -13,3 +13,4 @@ Download the .jar file from the [release](https://github.com/TimerErTim/Lanterna
 - TerminalConsole, which mainly acts like 'System.out.println' and 'System.in'
 - Menu choices in the TerminalConsole
 - Softwrapping and automatic resizing
+- Automatic scrolling and animated text
