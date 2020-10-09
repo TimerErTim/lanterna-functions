@@ -11,6 +11,7 @@ import java.util.LinkedList;
 public class TerminalConsole {
     // Essential components
     private final LinkedList<String> content;
+    private final String[] wrappedContent;
     private final Screen screen;
     private final TextGraphics graphics;
     private final TextColor textColor;
@@ -50,6 +51,7 @@ public class TerminalConsole {
         this.screen = screen;
         this.autoUpdate = autoUpdate;
         this.content = new LinkedList<>();
+        this.wrappedContent = new String[0];
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
         this.autoScrolling = true;
