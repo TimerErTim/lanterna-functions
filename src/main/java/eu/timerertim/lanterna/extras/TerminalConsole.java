@@ -81,12 +81,10 @@ public class TerminalConsole {
 
     //TODO: Implement println
 
-    // Getter
     public TextColor getTextColor() {
         return textColor;
     }
 
-    // Setter
     public void setTextColor(TextColor textColor) {
         this.textColor = textColor;
     }
