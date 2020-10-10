@@ -64,6 +64,8 @@ public class TerminalConsole {
         screen.clear();
         screen.refresh();
         graphics = screen.newTextGraphics();
+        graphics.setForegroundColor(textColor);
+        graphics.setBackgroundColor(backgroundColor);
     }
 
     /**
@@ -80,6 +82,18 @@ public class TerminalConsole {
     }
 
     //TODO: Implement println
+    public void println(String line){
+        content.add(line);
+        graphics.putString(0, content.size() - 1, line);
+    }
+
+    public void update() throws IOException {
+        screen.refresh(Screen.RefreshType.AUTOMATIC);
+    }
+
+    public void updateFull() throws IOException {
+        screen.refresh(Screen.RefreshType.COMPLETE);
+    }
 
     public TextColor getTextColor() {
         return textColor;
@@ -87,6 +101,7 @@ public class TerminalConsole {
 
     public void setTextColor(TextColor textColor) {
         this.textColor = textColor;
+        graphics.setForegroundColor(textColor);
     }
 
     public TextColor getBackgroundColor() {
@@ -95,6 +110,7 @@ public class TerminalConsole {
 
     public void setBackgroundColor(TextColor backgroundColor) {
         this.backgroundColor = backgroundColor;
+        graphics.setBackgroundColor(backgroundColor);
     }
 
     public boolean isAutoUpdate() {
