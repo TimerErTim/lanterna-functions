@@ -66,6 +66,7 @@ public class TerminalConsole {
         graphics = screen.newTextGraphics();
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
+        content.add("");
     }
 
     /**
@@ -81,10 +82,20 @@ public class TerminalConsole {
         this(screen, true);
     }
 
+    public void print(String text){
+        String[] part = text.split("\n", 2);
+        content.set(content.size()-1, content.get(content.size()-1) + part[0]);
+        graphics.putString(0, content.size() - 1, content.get(content.size()-1));
+        if(part.length > 1){
+            content.add("");
+            print(part[1]);
+        }
+    }
+
     //TODO: Implement println
     public void println(String line){
-        content.add(line);
-        graphics.putString(0, content.size() - 1, line);
+        print(line);
+        content.add("");
     }
 
     public void update() throws IOException {
