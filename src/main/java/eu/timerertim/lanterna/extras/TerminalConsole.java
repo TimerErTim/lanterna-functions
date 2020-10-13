@@ -12,10 +12,11 @@ import java.util.LinkedList;
 
 public class TerminalConsole {
     // Essential components
-    private final String[] wrappedContent;
-    private final LinkedList<String> content;
+    private final String[] wrappedContent; //This are the lines that are actually shown on the console
+    private final LinkedList<String> content; //This effectively is the lines users of this class want to print
     private final Screen screen;
     private final TextGraphics graphics;
+    private final int scrollPosition;
 
     // Options
     private TextColor textColor;
@@ -24,6 +25,8 @@ public class TerminalConsole {
     private boolean autoScrolling;
     private boolean autoResize;
     private KeyType skipTextAnimationKey; //This variable is null if animated println is deactivated
+    //TODO: Implement autoupdating
+    //TODO: Add softwrapping
 
     /**
      * Creates a new TerminalConsole object and prepares the given {@code Screen} object.
@@ -52,6 +55,7 @@ public class TerminalConsole {
         this.wrappedContent = new String[screen.getTerminalSize().getRows()-1]; // Array with the size of screens vertical height
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
+        this.scrollPosition = 0;
         this.autoScrolling = true;
         this.autoResize = true;
         this.skipTextAnimationKey = null;
@@ -81,6 +85,15 @@ public class TerminalConsole {
         this(screen, true);
     }
 
+    /**
+     * Prints the given text out on the console like {@code System.out.print} would do.
+     * <p>
+     * This method handles \r (carriage return) and \n (newline) perfectly fine. It also
+     * automatically softwraps the text. Note that you manually have to call {@link TerminalConsole#update()}
+     * in case {@code autoUpdate} is false.
+     *
+     * @param text the text to print
+     */
     public void print(String text){
         String[] lines = text.split("\n", 2);
         if(lines.length > 1){
@@ -97,11 +110,22 @@ public class TerminalConsole {
 
             // Main print function
             content.set(content.size()-1, content.get(content.size()-1) + text);
-            drawLine(content.get(content.size()-1), content.size()-1);
+            wrappedContent[content.size()-1] = content.get(content.size()-1);
+            drawLine(wrappedContent[content.size()-1], content.size()-1);
         }
     }
 
-    //TODO: Implement println
+    /**
+     * Prints the given line out on the console like {@code System.out.println} would do, which also means
+     * jumping to the next line.
+     * <p>
+     * This behaves exactly like calling {@link TerminalConsole#print(String) print(line + "\n")}, even though
+     * the code base is slightly different. Therefore this method also handles \r and \n perfectly fine and
+     * softwraps the text. Note that you manually have to call {@link TerminalConsole#update()}
+     * in case {@code autoUpdate} is false.
+     *
+     * @param line the line to print
+     */
     public void println(String line){
         print(line);
         content.add("");
@@ -119,13 +143,36 @@ public class TerminalConsole {
         drawLine("> ", wrappedContent.length);
     }
 
+    /**
+     * Updates the underlying screen by either comparing the difference between backbuffer and frontbuffer or
+     * redrawing the whole thing (whatever is more efficient).
+     * <p>
+     * This method is primarily called because it should promise the best possible performance.
+     * Typically you only call {@link TerminalConsole#updateFull()} when directly editing the underlying {@code Terminal}
+     * or {@code Screen} object, which is something you shouldn't do in the first place.
+     *
+     * @throws IOException the {@code Exception} thrown if an IO error occurs while refreshing the screen
+     */
     public void update() throws IOException {
         screen.refresh(Screen.RefreshType.AUTOMATIC);
     }
 
+    /**
+     * Updates the whole underlying screen object, moving all of the backbuffer to the frontbuffer.
+     * <p>
+     * Typically you only call this method when directly editing the underlying {@code Terminal} or
+     * {@code Screen} object, which is something you shouldn't do in the first place. It is not
+     * recommended making any direct changes to one of those objects, as all of the changes are
+     * lost after calling this method.
+     *
+     * @throws IOException the {@code Exception} thrown if an IO error occurs while refreshing the screen
+     */
     public void updateFull() throws IOException {
+        redrawFull();
         screen.refresh(Screen.RefreshType.COMPLETE);
     }
+
+    //TODO: Implement clear function
 
     public TextColor getTextColor() {
         return textColor;
