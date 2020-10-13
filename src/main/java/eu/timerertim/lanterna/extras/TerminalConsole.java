@@ -4,8 +4,10 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.screen.TabBehaviour;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class TerminalConsole {
@@ -39,7 +41,7 @@ public class TerminalConsole {
      * </p>
      * <p>
      *  After this constructor has been called the screen should not be directly modified anymore. A {@code TerminalConsole}
-     *  keeps track of the consoles content which is needed for its functionality.
+     *  keeps track of the consoles content, which is needed for its functionality.
      * </p>
      *
      * @param screen the underlying screen
@@ -51,7 +53,7 @@ public class TerminalConsole {
         this.screen = screen;
         this.autoUpdate = autoUpdate;
         this.content = new LinkedList<>();
-        this.wrappedContent = new String[0];
+        this.wrappedContent = new String[screen.getTerminalSize().getRows()-1]; // Array with the size of screens vertical height
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
         this.autoScrolling = true;
@@ -66,7 +68,9 @@ public class TerminalConsole {
         graphics = screen.newTextGraphics();
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
+        graphics.setTabBehaviour(TabBehaviour.ALIGN_TO_COLUMN_4);
         content.add("");
+        Arrays.fill(wrappedContent, "");
     }
 
     /**
@@ -83,12 +87,22 @@ public class TerminalConsole {
     }
 
     public void print(String text){
-        String[] part = text.split("\n", 2);
-        content.set(content.size()-1, content.get(content.size()-1) + part[0]);
-        graphics.putString(0, content.size() - 1, content.get(content.size()-1));
-        if(part.length > 1){
-            content.add("");
-            print(part[1]);
+        String[] lines = text.split("\n", 2);
+        if(lines.length > 1){
+            println(lines[0]);
+            print(lines[1]);
+        }else{
+            // Print logic goes here
+            // Carriage return special character handling
+            String[] carriage = text.split("\r");
+            if(carriage.length > 1){
+                content.set(content.size()-1, "");
+                text = carriage[carriage.length-1];
+            }
+
+            // Main print function
+            content.set(content.size()-1, content.get(content.size()-1) + text);
+            drawLine(content.get(content.size()-1), content.size()-1);
         }
     }
 
@@ -96,6 +110,17 @@ public class TerminalConsole {
     public void println(String line){
         print(line);
         content.add("");
+    }
+
+    private void drawLine(String line, int row){
+        String emptySpaces = String.format("%1$"+(screen.getTerminalSize().getColumns() - line.length())+"s", " ");
+        graphics.putString(0, row, line + emptySpaces);
+    }
+
+    private void redrawFull(){
+        for(int row = 0; row < wrappedContent.length; row++){
+            drawLine(wrappedContent[row], row);
+        }
     }
 
     public void update() throws IOException {
@@ -113,6 +138,7 @@ public class TerminalConsole {
     public void setTextColor(TextColor textColor) {
         this.textColor = textColor;
         graphics.setForegroundColor(textColor);
+        redrawFull();
     }
 
     public TextColor getBackgroundColor() {
@@ -122,6 +148,7 @@ public class TerminalConsole {
     public void setBackgroundColor(TextColor backgroundColor) {
         this.backgroundColor = backgroundColor;
         graphics.setBackgroundColor(backgroundColor);
+        redrawFull();
     }
 
     public boolean isAutoUpdate() {

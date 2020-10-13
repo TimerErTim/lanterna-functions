@@ -1,22 +1,21 @@
 package eu.timerertim.lanterna.extras.test.console;
 
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import eu.timerertim.lanterna.extras.TerminalConsole;
 
 import java.io.IOException;
 
-public class PrintTest {
-    public static void main(String... args) throws IOException, InterruptedException {
+public class ColorChangeTest {
+    public static void main(String[] args) throws IOException {
         TerminalConsole console = new TerminalConsole(new DefaultTerminalFactory().createScreen(), false);
-        console.print("Test");
-        console.print(" abstand ");
-        console.println("Test 1");
-        console.println("NewLine\nAnother newline");
+        console.println("Testing");
         console.update();
-        console.print("Carriage return test");
+        console.setBackgroundColor(TextColor.ANSI.BLUE);
+        console.print("Test other background");
         console.update();
-        Thread.sleep(1000);
-        console.print("\removed");
+        console.setTextColor(TextColor.ANSI.RED);
+        console.println(" and textcolor");
         console.update();
     }
 }
