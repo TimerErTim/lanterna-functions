@@ -30,19 +30,15 @@ public class TerminalConsole {
      * <p>
      *  This constructor initializes the {@code TerminalConsole} object with standard values and the parameters.
      *  It also prepares the screen by hiding the cursor, starting it (effectively entering private mode) and clearing it.
-     * </p>
      * <p>
      *  Standard values are:
      *  <ul>
-     *      <li>{@code autoScrolling} = true</li>
-     *      <li>{@code autoResize} = true</li>
-     *      <li>{@code skipTextAnimationKey} = null -> which effectively means no text animation</li>
-     *  </ul>
-     * </p>
-     * <p>
+     *      <li>{@code autoScrolling} = true
+     *      <li>{@code autoResize} = true
+     *      <li>{@code skipTextAnimationKey} = null -> which effectively means no text animation
+     *  </ul><p>
      *  After this constructor has been called the screen should not be directly modified anymore. A {@code TerminalConsole}
      *  keeps track of the consoles content, which is needed for its functionality.
-     * </p>
      *
      * @param screen the underlying screen
      * @param autoUpdate the boolean describing the update behavior (comparable to auto flush)
@@ -76,8 +72,7 @@ public class TerminalConsole {
     /**
      * Same as calling {@link TerminalConsole#TerminalConsole(Screen, boolean) TerminalConsole(screen, true)}.
      * <p>
-     *     Creates a new TerminalConsole with {@code autoUpdate} enabled.
-     * </p>
+     * Creates a new TerminalConsole with {@code autoUpdate} enabled.
      *
      * @param screen the underlying screen
      * @throws IOException the {@code Exception} thrown if there is an underlying IO error when starting the screen
@@ -121,6 +116,7 @@ public class TerminalConsole {
         for(int row = 0; row < wrappedContent.length; row++){
             drawLine(wrappedContent[row], row);
         }
+        drawLine("> ", wrappedContent.length);
     }
 
     public void update() throws IOException {
@@ -178,10 +174,9 @@ public class TerminalConsole {
     /**
      * Returns the state of text animation.
      * <p>
-     *     To set this value use {@link TerminalConsole#setSkipTextAnimationKey}.
-     *     It takes in a {@link KeyType} the user can use to skip the text animation. If the given {@code KeyType}
-     *     is null, that means that animated text is deactivated and this method will return false.
-     * </p>
+     * To set this value use {@link TerminalConsole#setSkipTextAnimationKey}.
+     * It takes in a {@link KeyType} the user can use to skip the text animation. If the given {@code KeyType}
+     * is null, that means that animated text is deactivated and this method will return false.
      *
      * @return true if skip key is assigned, which means text is animated
      */
@@ -192,9 +187,8 @@ public class TerminalConsole {
     /**
      * Sets the key used for skipping text animation and activates/deactivates said feature.
      * <p>
-     *      Takes a {@link KeyType} that the user will use to skip text animations. If null is passed, the
-     *      feature will be deactivated.
-     * </p>
+     * Takes a {@link KeyType} that the user will use to skip text animations. If null is passed, the
+     * feature will be deactivated.
      *
      * @param skipTextAnimationKey null deactivates the animation for text, not null is the {@code KeyType} users have to press to skip animation
      */
