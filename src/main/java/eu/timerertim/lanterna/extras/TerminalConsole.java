@@ -2,6 +2,7 @@ package eu.timerertim.lanterna.extras;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
@@ -65,6 +66,7 @@ public class TerminalConsole {
         screen.startScreen();
         screen.clear();
         screen.refresh();
+        //TODO: Replace with clear function
         graphics = screen.newTextGraphics();
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
@@ -131,6 +133,32 @@ public class TerminalConsole {
         content.add("");
     }
 
+    public String readLine(){
+        StringBuilder input = new StringBuilder();
+        KeyStroke key;
+        int cursorPos = 0;
+
+        // Read user input
+        try {
+            while ((key = screen.readInput()).getKeyType() != KeyType.Enter) {
+                if (key.getKeyType() == KeyType.Backspace && cursorPos > 0) {
+                    input.reverse().deleteCharAt(0).reverse();
+                    graphics.setCharacter(2 + --cursorPos, wrappedContent.length, ' ');
+                } else if (key.getKeyType() == KeyType.Character) {
+                    input.append(key.getCharacter());
+                    graphics.setCharacter(2 + cursorPos++, wrappedContent.length, key.getCharacter());
+                }
+                update();
+            }
+        }catch (IOException ex){
+            return null;
+        }
+
+        // Reset line and return string
+        clearInputLine();
+        return input.toString();
+    }
+
     private void drawLine(String line, int row){
         String emptySpaces = String.format("%1$"+(screen.getTerminalSize().getColumns() - line.length())+"s", " ");
         graphics.putString(0, row, line + emptySpaces);
@@ -140,7 +168,7 @@ public class TerminalConsole {
         for(int row = 0; row < wrappedContent.length; row++){
             drawLine(wrappedContent[row], row);
         }
-        drawLine("> ", wrappedContent.length);
+        clearInputLine();
     }
 
     /**
@@ -172,7 +200,11 @@ public class TerminalConsole {
         screen.refresh(Screen.RefreshType.COMPLETE);
     }
 
-    //TODO: Implement clear function
+    //TODO: Implement clear
+
+    private void clearInputLine(){
+        drawLine("> ", wrappedContent.length);
+    }
 
     public TextColor getTextColor() {
         return textColor;

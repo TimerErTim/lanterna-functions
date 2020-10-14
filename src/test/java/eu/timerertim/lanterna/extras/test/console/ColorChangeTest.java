@@ -17,5 +17,8 @@ public class ColorChangeTest {
         console.setTextColor(TextColor.ANSI.RED);
         console.println(" and textcolor");
         console.update();
+        console.setBackgroundColor(TextColor.ANSI.BLACK);
+        console.update();
+        console.setTextColor(TextColor.ANSI.BLUE);
     }
 }

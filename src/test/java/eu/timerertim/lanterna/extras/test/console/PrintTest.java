@@ -15,7 +15,7 @@ public class PrintTest {
         console.update();
         console.print("Carriage return test");
         console.update();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         console.print("\removed");
         console.update();
     }
