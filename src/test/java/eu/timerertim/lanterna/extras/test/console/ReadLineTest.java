@@ -10,5 +10,7 @@ public class ReadLineTest {
         TerminalConsole console = new TerminalConsole(new DefaultTerminalFactory().createScreen());
         console.println(console.readLine());
         console.update();
+        console.println(console.readLine());
+        console.update();
     }
 }

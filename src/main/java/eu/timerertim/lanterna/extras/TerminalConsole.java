@@ -26,6 +26,9 @@ public class TerminalConsole {
     private boolean autoScrolling;
     private boolean autoResize;
     private KeyType skipTextAnimationKey; //This variable is null if animated println is deactivated
+
+    // User config
+    private String readLinePrompt;
     //TODO: Implement autoupdating
     //TODO: Add softwrapping
 
@@ -60,6 +63,7 @@ public class TerminalConsole {
         this.autoScrolling = true;
         this.autoResize = true;
         this.skipTextAnimationKey = null;
+        this.readLinePrompt = ">";
 
         // Initializes screen
         screen.setCursorPosition(null);
@@ -134,28 +138,33 @@ public class TerminalConsole {
     }
 
     public String readLine(){
+        //TODO: Vertical scrolling in case of long Strings
         StringBuilder input = new StringBuilder();
         KeyStroke key;
         int cursorPos = 0;
 
         // Read user input
+        clearInputLine(true);
         try {
+            update();
             while ((key = screen.readInput()).getKeyType() != KeyType.Enter) {
                 if (key.getKeyType() == KeyType.Backspace && cursorPos > 0) {
                     input.reverse().deleteCharAt(0).reverse();
-                    graphics.setCharacter(2 + --cursorPos, wrappedContent.length, ' ');
+                    graphics.setCharacter(readLinePrompt.length() + --cursorPos, wrappedContent.length, ' ');
                 } else if (key.getKeyType() == KeyType.Character) {
                     input.append(key.getCharacter());
-                    graphics.setCharacter(2 + cursorPos++, wrappedContent.length, key.getCharacter());
+                    graphics.setCharacter(readLinePrompt.length() + cursorPos++, wrappedContent.length, key.getCharacter());
                 }
                 update();
             }
+            // Reset line
+            clearInputLine(false);
+            update();
         }catch (IOException ex){
             return null;
         }
 
-        // Reset line and return string
-        clearInputLine();
+        // Return string
         return input.toString();
     }
 
@@ -168,7 +177,7 @@ public class TerminalConsole {
         for(int row = 0; row < wrappedContent.length; row++){
             drawLine(wrappedContent[row], row);
         }
-        clearInputLine();
+        clearInputLine(false);
     }
 
     /**
@@ -202,8 +211,29 @@ public class TerminalConsole {
 
     //TODO: Implement clear
 
-    private void clearInputLine(){
-        drawLine("> ", wrappedContent.length);
+    private void clearInputLine(boolean prompt){
+        drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
+    }
+
+    /**
+     * Gets the prompt String
+     * <p>
+     * Can be set by {@link TerminalConsole#setReadLinePrompt(String)}.
+     *
+     * @return the prompt String
+     */
+    public String getReadLinePrompt() {
+        return readLinePrompt;
+    }
+
+    /**
+     * Sets the String prompting the user for input. Typically something like {@code ">"} or
+     * {@code ":"}.
+     *
+     * @param readLinePrompt the prompting String
+     */
+    public void setReadLinePrompt(String readLinePrompt) {
+        this.readLinePrompt = readLinePrompt;
     }
 
     public TextColor getTextColor() {
