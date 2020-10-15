@@ -31,6 +31,7 @@ public class TerminalConsole {
     private String readLinePrompt;
     //TODO: Implement autoupdating
     //TODO: Add softwrapping
+    //TODO: Add close function
 
     /**
      * Creates a new TerminalConsole object and prepares the given {@code Screen} object.
@@ -68,15 +69,13 @@ public class TerminalConsole {
         // Initializes screen
         screen.setCursorPosition(null);
         screen.startScreen();
-        screen.clear();
-        screen.refresh();
-        //TODO: Replace with clear function
+        clear();
+        update();
         graphics = screen.newTextGraphics();
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
         graphics.setTabBehaviour(TabBehaviour.ALIGN_TO_COLUMN_4);
         content.add("");
-        Arrays.fill(wrappedContent, "");
     }
 
     /**
@@ -209,7 +208,27 @@ public class TerminalConsole {
         screen.refresh(Screen.RefreshType.COMPLETE);
     }
 
-    //TODO: Implement clear
+    /**
+     * Clears the console.
+     * <p>
+     * Removes any content from this console and redrawing it, leaving you with a
+     * blank terminal. You have to manually call {@link TerminalConsole#update()}
+     * in order to make the changes visible if {@code autoUpdate} is false.
+     */
+    public void clear(){
+        content.clear();
+        Arrays.fill(wrappedContent, "");
+
+        if(autoUpdate){
+            try {
+                updateFull();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            redrawFull();
+        }
+    }
 
     private void clearInputLine(boolean prompt){
         drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
@@ -260,6 +279,7 @@ public class TerminalConsole {
         return autoUpdate;
     }
 
+    //TODO: Add JavaDoc
     public void setAutoUpdate(boolean autoUpdate) {
         this.autoUpdate = autoUpdate;
     }
