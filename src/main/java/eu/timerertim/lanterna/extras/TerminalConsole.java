@@ -275,11 +275,28 @@ public class TerminalConsole {
         redrawFull();
     }
 
+    /**
+     * Returns the autoUpdate state
+     *
+     * @return the autoUpdate boolean
+     */
     public boolean isAutoUpdate() {
         return autoUpdate;
     }
 
-    //TODO: Add JavaDoc
+    /**
+     * Activates or deactivates autoUpdating.
+     * <p>
+     * The feature is comparable to autoFlush when using streams. It automatically
+     * updates the console upon changes, basically calling {@link TerminalConsole#update()}.
+     * <p>
+     * This greatly reduces the work needed for a functional console. However Exceptions are not caught or
+     * handled in any way. Only the StackTrace is printed to {@code System.out}. Depending on your
+     * needs you might not want this. It should be noted, that under normal circumstances no Exception
+     * will occur.
+     *
+     * @param autoUpdate tne autoUpdate
+     */
     public void setAutoUpdate(boolean autoUpdate) {
         this.autoUpdate = autoUpdate;
     }
