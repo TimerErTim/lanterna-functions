@@ -137,10 +137,20 @@ public class TerminalConsole {
     }
 
     /**
-     * @return
+     * Lets the user input a String and retrieve it afterwards.
+     * <p>
+     * The method is pretty straight forward, as it does exactly that.
+     * Note, that the method is blocking until the user confirms his input
+     * by pressing the ENTER key.
+     * <p>
+     * Also displays a small prompt String to let the user know, that his input is
+     * needed. The prompt String can be specified by calling {@link TerminalConsole#setReadLinePrompt(String)}.
+     * This method is always "autoUpdating", because the user needs constant feedback
+     * regardless of {@code autoUpdate} being true or not.
+     *
+     * @return the user given String
      */
     public String readLine() {
-        //TODO: Vertical scrolling in case of long Strings
         StringBuilder input = new StringBuilder();
         KeyStroke key;
 
@@ -157,7 +167,6 @@ public class TerminalConsole {
                 // Give user feedback
                 String inputLine = readLinePrompt + input.toString();
                 drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns(), 0)), wrappedContent.length);
-                //acgraphics.putString(Math.min(screen.getTerminalSize().getColumns() - inputLine.length(), 0), wrappedContent.length, inputLine);
                 update();
             }
             // Reset line
