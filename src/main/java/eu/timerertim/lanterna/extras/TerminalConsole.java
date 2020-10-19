@@ -36,19 +36,19 @@ public class TerminalConsole {
     /**
      * Creates a new TerminalConsole object and prepares the given {@code Screen} object.
      * <p>
-     *  This constructor initializes the {@code TerminalConsole} object with standard values and the parameters.
-     *  It also prepares the screen by hiding the cursor, starting it (effectively entering private mode) and clearing it.
+     * This constructor initializes the {@code TerminalConsole} object with standard values and the parameters.
+     * It also prepares the screen by hiding the cursor, starting it (effectively entering private mode) and clearing it.
      * <p>
-     *  Standard values are:
-     *  <ul>
-     *      <li>{@code autoScrolling} = true
-     *      <li>{@code autoResize} = true
-     *      <li>{@code skipTextAnimationKey} = null -> which effectively means no text animation
-     *  </ul><p>
-     *  After this constructor has been called the screen should not be directly modified anymore. A {@code TerminalConsole}
-     *  keeps track of the consoles content, which is needed for its functionality.
+     * Standard values are:
+     * <ul>
+     *     <li>{@code autoScrolling} = true
+     *     <li>{@code autoResize} = true
+     *     <li>{@code skipTextAnimationKey} = null -> which effectively means no text animation
+     * </ul><p>
+     * After this constructor has been called the screen should not be directly modified anymore. A {@code TerminalConsole}
+     * keeps track of the consoles content, which is needed for its functionality.
      *
-     * @param screen the underlying screen
+     * @param screen     the underlying screen
      * @param autoUpdate the boolean describing the update behavior (comparable to auto flush)
      * @throws IOException the {@code Exception} thrown if there is an underlying IO error when starting the screen
      */
@@ -57,7 +57,7 @@ public class TerminalConsole {
         this.screen = screen;
         this.autoUpdate = autoUpdate;
         this.content = new LinkedList<>();
-        this.wrappedContent = new String[screen.getTerminalSize().getRows()-1]; // Array with the size of screens vertical height
+        this.wrappedContent = new String[screen.getTerminalSize().getRows() - 1]; // Array with the size of screens vertical height
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
         this.scrollPosition = 0;
@@ -99,24 +99,24 @@ public class TerminalConsole {
      *
      * @param text the text to print
      */
-    public void print(String text){
+    public void print(String text) {
         String[] lines = text.split("\n", 2);
-        if(lines.length > 1){
+        if (lines.length > 1) {
             println(lines[0]);
             print(lines[1]);
-        }else{
+        } else {
             // Print logic goes here
             // Carriage return special character handling
             String[] carriage = text.split("\r");
-            if(carriage.length > 1){
-                content.set(content.size()-1, "");
-                text = carriage[carriage.length-1];
+            if (carriage.length > 1) {
+                content.set(content.size() - 1, "");
+                text = carriage[carriage.length - 1];
             }
 
             // Main print function
-            content.set(content.size()-1, content.get(content.size()-1) + text);
-            wrappedContent[content.size()-1] = content.get(content.size()-1);
-            drawLine(wrappedContent[content.size()-1], content.size()-1);
+            content.set(content.size() - 1, content.get(content.size() - 1) + text);
+            wrappedContent[content.size() - 1] = content.get(content.size() - 1);
+            drawLine(wrappedContent[content.size() - 1], content.size() - 1);
         }
     }
 
@@ -131,17 +131,15 @@ public class TerminalConsole {
      *
      * @param line the line to print
      */
-    public void println(String line){
+    public void println(String line) {
         print(line);
         content.add("");
     }
 
     /**
-     * 
-     *
      * @return
      */
-    public String readLine(){
+    public String readLine() {
         //TODO: Vertical scrolling in case of long Strings
         StringBuilder input = new StringBuilder();
         KeyStroke key;
@@ -165,7 +163,7 @@ public class TerminalConsole {
             // Reset line
             clearInputLine(false);
             update();
-        }catch (IOException ex){
+        } catch (IOException ex) {
             return null;
         }
 
@@ -173,19 +171,19 @@ public class TerminalConsole {
         return input.toString();
     }
 
-    private void drawLine(String line, int row){
+    private void drawLine(String line, int row) {
         int emptySpace = screen.getTerminalSize().getColumns() - line.length();
         String emptySpaces;
-        if(emptySpace > 0)
-         emptySpaces = String.format("%1$"+emptySpace+"s", " ");
-        else{
+        if (emptySpace > 0)
+            emptySpaces = String.format("%1$" + emptySpace + "s", " ");
+        else {
             emptySpaces = "";
         }
         graphics.putString(0, row, line + emptySpaces);
     }
 
-    private void redrawFull(){
-        for(int row = 0; row < wrappedContent.length; row++){
+    private void redrawFull() {
+        for (int row = 0; row < wrappedContent.length; row++) {
             drawLine(wrappedContent[row], row);
         }
         clearInputLine(false);
@@ -227,22 +225,22 @@ public class TerminalConsole {
      * blank terminal. You have to manually call {@link TerminalConsole#update()}
      * in order to make the changes visible if {@code autoUpdate} is false.
      */
-    public void clear(){
+    public void clear() {
         content.clear();
         Arrays.fill(wrappedContent, "");
 
-        if(autoUpdate){
+        if (autoUpdate) {
             try {
                 updateFull();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             redrawFull();
         }
     }
 
-    private void clearInputLine(boolean prompt){
+    private void clearInputLine(boolean prompt) {
         drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
     }
 
@@ -338,7 +336,7 @@ public class TerminalConsole {
      *
      * @return true if skip key is assigned, which means text is animated
      */
-    public boolean isTextAnimated(){
+    public boolean isTextAnimated() {
         return skipTextAnimationKey != null;
     }
 
