@@ -67,15 +67,15 @@ public class TerminalConsole {
         this.readLinePrompt = ">";
 
         // Initializes screen
-        screen.setCursorPosition(null);
-        screen.startScreen();
-        clear();
-        update();
         graphics = screen.newTextGraphics();
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
         graphics.setTabBehaviour(TabBehaviour.ALIGN_TO_COLUMN_4);
         content.add("");
+        screen.setCursorPosition(null);
+        screen.startScreen();
+        clear();
+        update();
     }
 
     /**
@@ -136,6 +136,11 @@ public class TerminalConsole {
         content.add("");
     }
 
+    /**
+     * 
+     *
+     * @return
+     */
     public String readLine(){
         //TODO: Vertical scrolling in case of long Strings
         StringBuilder input = new StringBuilder();
@@ -168,7 +173,13 @@ public class TerminalConsole {
     }
 
     private void drawLine(String line, int row){
-        String emptySpaces = String.format("%1$"+(screen.getTerminalSize().getColumns() - line.length())+"s", " ");
+        int emptySpace = screen.getTerminalSize().getColumns() - line.length();
+        String emptySpaces;
+        if(emptySpace > 0)
+         emptySpaces = String.format("%1$"+emptySpace+"s", " ");
+        else{
+            emptySpaces = "";
+        }
         graphics.putString(0, row, line + emptySpaces);
     }
 
