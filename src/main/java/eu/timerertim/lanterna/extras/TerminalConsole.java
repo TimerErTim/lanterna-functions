@@ -145,20 +145,21 @@ public class TerminalConsole {
         //TODO: Vertical scrolling in case of long Strings
         StringBuilder input = new StringBuilder();
         KeyStroke key;
-        int cursorPos = 0;
 
         // Read user input
         clearInputLine(true);
         try {
             update();
             while ((key = screen.readInput()).getKeyType() != KeyType.Enter) {
-                if (key.getKeyType() == KeyType.Backspace && cursorPos > 0) {
+                if (key.getKeyType() == KeyType.Backspace) {
                     input.reverse().deleteCharAt(0).reverse();
-                    graphics.setCharacter(readLinePrompt.length() + --cursorPos, wrappedContent.length, ' ');
                 } else if (key.getKeyType() == KeyType.Character) {
                     input.append(key.getCharacter());
-                    graphics.setCharacter(readLinePrompt.length() + cursorPos++, wrappedContent.length, key.getCharacter());
                 }
+                // Give user feedback
+                String inputLine = readLinePrompt + input.toString();
+                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns(), 0)), wrappedContent.length);
+                //acgraphics.putString(Math.min(screen.getTerminalSize().getColumns() - inputLine.length(), 0), wrappedContent.length, inputLine);
                 update();
             }
             // Reset line
