@@ -71,7 +71,6 @@ public class TerminalConsole {
         graphics.setForegroundColor(textColor);
         graphics.setBackgroundColor(backgroundColor);
         graphics.setTabBehaviour(TabBehaviour.ALIGN_TO_COLUMN_4);
-        content.add("");
         screen.setCursorPosition(null);
         screen.startScreen();
         clear();
@@ -236,6 +235,7 @@ public class TerminalConsole {
      */
     public void clear() {
         content.clear();
+        content.add("");
         Arrays.fill(wrappedContent, "");
 
         if (autoUpdate) {
