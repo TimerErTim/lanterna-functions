@@ -7,11 +7,12 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
-public class TerminalConsole {
+public class TerminalConsole implements Closeable {
     // Essential components
     private final String[] wrappedContent; //This are the lines that are actually shown on the console
     private final LinkedList<String> content; //This effectively is the lines users of this class want to print
@@ -29,9 +30,9 @@ public class TerminalConsole {
 
     // User config
     private String readLinePrompt;
+    private boolean closed;
     //TODO: Implement autoupdating
     //TODO: Add softwrapping
-    //TODO: Add close function
 
     /**
      * Creates a new TerminalConsole object and prepares the given {@code Screen} object.
@@ -65,6 +66,7 @@ public class TerminalConsole {
         this.autoResize = true;
         this.skipTextAnimationKey = null;
         this.readLinePrompt = ">";
+        this.closed = false;
 
         // Initializes screen
         graphics = screen.newTextGraphics();
@@ -179,24 +181,6 @@ public class TerminalConsole {
         return input.toString();
     }
 
-    private void drawLine(String line, int row) {
-        int emptySpace = screen.getTerminalSize().getColumns() - line.length();
-        String emptySpaces;
-        if (emptySpace > 0)
-            emptySpaces = String.format("%1$" + emptySpace + "s", " ");
-        else {
-            emptySpaces = "";
-        }
-        graphics.putString(0, row, line + emptySpaces);
-    }
-
-    private void redrawFull() {
-        for (int row = 0; row < wrappedContent.length; row++) {
-            drawLine(wrappedContent[row], row);
-        }
-        clearInputLine(false);
-    }
-
     /**
      * Updates the underlying screen by either comparing the difference between backbuffer and frontbuffer or
      * redrawing the whole thing (whatever is more efficient).
@@ -249,8 +233,35 @@ public class TerminalConsole {
         }
     }
 
-    private void clearInputLine(boolean prompt) {
-        drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
+    /**
+     * Just stops the underlying screen.
+     * <p>
+     * Should only be called if you decide not to use this console anymore.
+     * This is an alternative for calling {@link Screen#close()} on the underlying screen directly.
+     * Useful for cases in which you do not have a reference to the original screen anymore.
+     * <p>
+     * Basically the same as calling {@link TerminalConsole#stopScreen()} but has no effect on second call
+     * as it is specified this way in the {@code Closeable} interface.
+     */
+    public void close() {
+        if (!closed) {
+            stopScreen();
+            closed = true;
+        }
+    }
+
+    /**
+     * Just stops the underlying screen.
+     * <p>
+     * This is an alternative for calling {@link Screen#stopScreen} on the underlying screen directly.
+     * Useful for cases in which you do not have a reference to the original screen anymore.
+     */
+    public void stopScreen() {
+        try {
+            screen.close();
+        } catch (IOException e) {
+            screen.clear();
+        }
     }
 
     /**
@@ -272,26 +283,6 @@ public class TerminalConsole {
      */
     public void setReadLinePrompt(String readLinePrompt) {
         this.readLinePrompt = readLinePrompt;
-    }
-
-    public TextColor getTextColor() {
-        return textColor;
-    }
-
-    public void setTextColor(TextColor textColor) {
-        this.textColor = textColor;
-        graphics.setForegroundColor(textColor);
-        redrawFull();
-    }
-
-    public TextColor getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public void setBackgroundColor(TextColor backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        graphics.setBackgroundColor(backgroundColor);
-        redrawFull();
     }
 
     /**
@@ -320,22 +311,6 @@ public class TerminalConsole {
         this.autoUpdate = autoUpdate;
     }
 
-    public boolean isAutoScrolling() {
-        return autoScrolling;
-    }
-
-    public void setAutoScrolling(boolean autoScrolling) {
-        this.autoScrolling = autoScrolling;
-    }
-
-    public boolean isAutoResize() {
-        return autoResize;
-    }
-
-    public void setAutoResize(boolean autoResize) {
-        this.autoResize = autoResize;
-    }
-
     /**
      * Returns the state of text animation.
      * <p>
@@ -359,5 +334,63 @@ public class TerminalConsole {
      */
     public void setSkipTextAnimationKey(KeyType skipTextAnimationKey) {
         this.skipTextAnimationKey = skipTextAnimationKey;
+    }
+
+    public TextColor getTextColor() {
+        return textColor;
+    }
+
+    public void setTextColor(TextColor textColor) {
+        this.textColor = textColor;
+        graphics.setForegroundColor(textColor);
+        redrawFull();
+    }
+
+    public TextColor getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(TextColor backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        graphics.setBackgroundColor(backgroundColor);
+        redrawFull();
+    }
+
+    public boolean isAutoScrolling() {
+        return autoScrolling;
+    }
+
+    public void setAutoScrolling(boolean autoScrolling) {
+        this.autoScrolling = autoScrolling;
+    }
+
+    public boolean isAutoResize() {
+        return autoResize;
+    }
+
+    public void setAutoResize(boolean autoResize) {
+        this.autoResize = autoResize;
+    }
+
+    private void drawLine(String line, int row) {
+        int emptySpace = screen.getTerminalSize().getColumns() - line.length();
+        String emptySpaces;
+        if (emptySpace > 0)
+            emptySpaces = String.format("%1$" + emptySpace + "s", " ");
+        else {
+            emptySpaces = "";
+        }
+        graphics.putString(0, row, line + emptySpaces);
+    }
+
+    private void redrawFull() {
+        for (int row = 0; row < wrappedContent.length; row++) {
+            drawLine(wrappedContent[row], row);
+        }
+        clearInputLine(false);
+    }
+
+    private void clearInputLine(boolean prompt) {
+        drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
     }
 }
