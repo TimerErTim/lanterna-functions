@@ -9,8 +9,8 @@ In order to use this library you will obviously have to add [Lanterna](https://g
 ## Usage
 Download the .jar file from the [release](https://github.com/TimerErTim/Lanterna-Functions/releases) page and add it to your project as library. You may have to extract it prior to using it in order to have independent source and javadoc files. In the future you should be able to get it from Maven Central.
 # Feature List
-### TODO
 - TerminalConsole, which mainly acts like 'System.out.println' and 'System.in'
+### TODO
 - Menu choices in the TerminalConsole
 - Softwrapping and automatic resizing
 - Automatic scrolling and animated text
