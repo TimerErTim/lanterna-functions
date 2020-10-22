@@ -18,7 +18,7 @@ public class TextUtils {
      * @param columns the maximum available space per line
      * @return String array containing the line in a softwrapped format
      */
-    public String[] applySoftwrapping(String line, int columns) {
+    public static String[] applySoftwrapping(String line, int columns) {
         return TerminalTextUtils.getWordWrappedText(columns, line).toArray(String[]::new);
     }
 
@@ -33,7 +33,7 @@ public class TextUtils {
      * @param columns the maximum available space per line
      * @return String array containing the line in a hardwrapped format
      */
-    public String[] applyHardwrapping(String line, int columns) {
+    public static String[] applyHardwrapping(String line, int columns) {
         String fitString = TerminalTextUtils.fitString(line, columns);
         String otherString = line.replaceFirst(Pattern.quote(fitString), ""); // String that doesn't fit in the first line
         if (otherString.length() > 0) {
