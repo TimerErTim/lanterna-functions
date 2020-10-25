@@ -6,6 +6,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
+import eu.timerertim.lanterna.extras.utils.WrappingMode;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -21,14 +22,15 @@ public class TerminalConsole implements Closeable {
     private final int scrollPosition;
 
     // Options
-    private TextColor textColor;
-    private TextColor backgroundColor;
     private boolean autoUpdate;
     private boolean autoScrolling;
     private boolean autoResize;
     private KeyType skipTextAnimationKey; //This variable is null if animated println is deactivated
 
-    // User config
+    // Config
+    private TextColor textColor;
+    private TextColor backgroundColor;
+    private WrappingMode wrapping;
     private String readLinePrompt;
     private boolean closed;
     //TODO: Implement autoupdating
@@ -65,6 +67,7 @@ public class TerminalConsole implements Closeable {
         this.autoScrolling = true;
         this.autoResize = true;
         this.skipTextAnimationKey = null;
+        this.wrapping = WrappingMode.SOFTWRAPPING;
         this.readLinePrompt = ">";
         this.closed = false;
 
@@ -334,6 +337,36 @@ public class TerminalConsole implements Closeable {
      */
     public void setSkipTextAnimationKey(KeyType skipTextAnimationKey) {
         this.skipTextAnimationKey = skipTextAnimationKey;
+    }
+
+    /**
+     * Gets the WrappingMode.
+     *
+     * @return the WrappingMode enum
+     */
+    public WrappingMode getWrapping() {
+        return wrapping;
+    }
+
+    /**
+     * Sets the WrappingMode used for this console object.
+     * <p>
+     * The wrapping is the text's behavior when it surpasses
+     * the horizontal space limit. That limit is defined by
+     * the size of this console. For a list of different
+     * behaviors please refer to {@link WrappingMode}.
+     * <p>
+     * Note that this also recalculates the text with the
+     * new wrapping and redraws the whole console to show the
+     * change. If {@code autoUpdate} is false, you will have
+     * to manually update in order to make the changes visible
+     * on screen.
+     *
+     * @param wrapping the WrappingMode used to wrap text
+     */
+    public void setWrapping(WrappingMode wrapping) {
+        //TODO: rewrapping when changing WrappingMode
+        this.wrapping = wrapping;
     }
 
     public TextColor getTextColor() {
