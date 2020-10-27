@@ -16,7 +16,7 @@ import java.util.LinkedList;
 public class TerminalConsole implements Closeable {
     // Essential components
     private final String[] wrappedContent; //This are the lines that are actually shown on the console
-    private final LinkedList<String> content; //This effectively is the lines users of this class want to print
+    private final LinkedList<String> content; //This effectively is the lines users of this class wants to print
     private final Screen screen;
     private final TextGraphics graphics;
     private final int scrollPosition;
