@@ -10,7 +10,7 @@ class ContentManager {
     private final TerminalSize size; //Size of the managed content display
     private final String[] displayContent; //This are the lines that are actually shown on the console
     private final List<String> content, wrappedContent; //This effectively are the lines users of this class want to use
-    private final WrappingMode wrapping;
+    private WrappingMode wrapping;
 
     // Helper fields
     private int previousModifiedIndex;
@@ -19,11 +19,16 @@ class ContentManager {
         this.size = size;
         this.content = new LinkedList<>();
         this.wrappedContent = new ArrayList<>();
-        this.displayContent = new String[size.getRows()];
+        this.displayContent = new String[size.getRows() - 1];
         this.wrapping = wrapping;
         this.previousModifiedIndex = 0;
 
-        Arrays.fill(displayContent, "");
+        content.add("");
+        Arrays.fill(displayContent, null);
+    }
+
+    void appendLine(String line) {
+        replaceLine(content.get(content.size() - 1) + line);
     }
 
     void addLine(String line) {
@@ -44,6 +49,19 @@ class ContentManager {
         Collections.addAll(wrappedContent, wrapping.wrap(line, size.getColumns()));
     }
 
+    void clear() {
+        content.clear();
+        content.add("");
+        wrappedContent.clear();
+        Arrays.fill(displayContent, null);
+        previousModifiedIndex = 0;
+    }
+
+    /**
+     * Transfers the wrappedContent to the displayContent
+     *
+     * @param scrollPosition the scrolling being applied
+     */
     void fillDisplayContent(int scrollPosition) {
         for (int index = 0; index < displayContent.length; index++) {
             int wrappedIndex = index + scrollPosition;
@@ -63,5 +81,13 @@ class ContentManager {
      */
     String[] getDisplayContent() {
         return displayContent;
+    }
+
+    WrappingMode getWrapping() {
+        return wrapping;
+    }
+
+    void setWrapping(WrappingMode wrapping) {
+        this.wrapping = wrapping;
     }
 }
