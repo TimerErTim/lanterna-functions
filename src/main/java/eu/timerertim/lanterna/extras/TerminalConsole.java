@@ -223,7 +223,7 @@ public class TerminalConsole implements Closeable {
     public void clear() {
         content.clear();
         content.add("");
-        Arrays.fill(wrappedContent, "");
+        Arrays.fill(wrappedContent, null);
 
         if (autoUpdate) {
             try {
@@ -406,6 +406,12 @@ public class TerminalConsole implements Closeable {
     }
 
     private void drawLine(String line, int row) {
+        // Check for null value
+        if (line == null) {
+            line = "";
+        }
+
+        // Generate empty spaces needed for filling up the line
         int emptySpace = screen.getTerminalSize().getColumns() - line.length();
         String emptySpaces;
         if (emptySpace > 0)
@@ -413,6 +419,8 @@ public class TerminalConsole implements Closeable {
         else {
             emptySpaces = "";
         }
+
+        // Actually print line
         graphics.putString(0, row, line + emptySpaces);
     }
 
@@ -425,5 +433,33 @@ public class TerminalConsole implements Closeable {
 
     private void clearInputLine(boolean prompt) {
         drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
+    }
+
+    /**
+     * Appends the parameter to the wrappedContent array and
+     * returns the overflow, in case there was one.
+     *
+     * @param lines the lines to append to the array
+     * @return the overflow (how many lines could not have been appended), 0 if lines fit perfectly fine
+     */
+    private int appendToDisplayContent(String... lines) {
+        // Determine index of first empty space
+        int index = 0;
+        while (index < wrappedContent.length && wrappedContent[index] != null) {
+            index++;
+        }
+
+        // Can't append anything
+        if (index == wrappedContent.length) {
+            return lines.length;
+        }
+
+        // Append
+        for (int pointer = index; pointer < wrappedContent.length && pointer - index < lines.length; pointer++) {
+            wrappedContent[pointer] = lines[pointer - index];
+        }
+
+        // Return overflow
+        return Math.max(0, (index - wrappedContent.length) + lines.length);
     }
 }
