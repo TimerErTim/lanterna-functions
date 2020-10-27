@@ -10,13 +10,11 @@ import eu.timerertim.lanterna.extras.utils.WrappingMode;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
 
 public class TerminalConsole implements Closeable {
     // Essential components
-    private final String[] wrappedContent; //This are the lines that are actually shown on the console
-    private final LinkedList<String> content; //This effectively is the lines users of this class wants to print
+    private final ContentManager contentManager;
+    private final String[] displayContent;
     private final Screen screen;
     private final TextGraphics graphics;
     private final int scrollPosition;
@@ -59,15 +57,15 @@ public class TerminalConsole implements Closeable {
         // Initialize local variables and standard values
         this.screen = screen;
         this.autoUpdate = autoUpdate;
-        this.content = new LinkedList<>();
-        this.wrappedContent = new String[screen.getTerminalSize().getRows() - 1]; // Array with the size of screens vertical height
+        this.wrapping = WrappingMode.SOFTWRAPPING;
+        this.contentManager = new ContentManager(screen.getTerminalSize(), wrapping);
+        this.displayContent = contentManager.getDisplayContent();
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
         this.scrollPosition = 0;
         this.autoScrolling = true;
         this.autoResize = true;
         this.skipTextAnimationKey = null;
-        this.wrapping = WrappingMode.SOFTWRAPPING;
         this.readLinePrompt = ">";
         this.closed = false;
 
@@ -113,14 +111,14 @@ public class TerminalConsole implements Closeable {
             // Carriage return special character handling
             String[] carriage = text.split("\r");
             if (carriage.length > 1) {
-                content.set(content.size() - 1, "");
+                contentManager.replaceLine("");
                 text = carriage[carriage.length - 1];
             }
 
             // Main print function
-            content.set(content.size() - 1, content.get(content.size() - 1) + text);
-            wrappedContent[content.size() - 1] = content.get(content.size() - 1);
-            drawLine(wrappedContent[content.size() - 1], content.size() - 1);
+            contentManager.appendLine(text);
+            contentManager.fillDisplayContent(scrollPosition);
+            redrawFull();
         }
     }
 
@@ -137,7 +135,7 @@ public class TerminalConsole implements Closeable {
      */
     public void println(String line) {
         print(line);
-        content.add("");
+        contentManager.addLine("");
     }
 
     /**
@@ -170,7 +168,7 @@ public class TerminalConsole implements Closeable {
                 }
                 // Give user feedback
                 String inputLine = readLinePrompt + input.toString();
-                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns(), 0)), wrappedContent.length);
+                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns(), 0)), screen.getTerminalSize().getRows() - 1);
                 update();
             }
             // Reset line
@@ -221,9 +219,7 @@ public class TerminalConsole implements Closeable {
      * in order to make the changes visible if {@code autoUpdate} is false.
      */
     public void clear() {
-        content.clear();
-        content.add("");
-        Arrays.fill(wrappedContent, null);
+        contentManager.clear();
 
         if (autoUpdate) {
             try {
@@ -367,6 +363,7 @@ public class TerminalConsole implements Closeable {
     public void setWrapping(WrappingMode wrapping) {
         //TODO: rewrapping when changing WrappingMode
         this.wrapping = wrapping;
+        contentManager.setWrapping(wrapping);
     }
 
     public TextColor getTextColor() {
@@ -425,41 +422,13 @@ public class TerminalConsole implements Closeable {
     }
 
     private void redrawFull() {
-        for (int row = 0; row < wrappedContent.length; row++) {
-            drawLine(wrappedContent[row], row);
+        for (int row = 0; row < displayContent.length; row++) {
+            drawLine(displayContent[row], row);
         }
         clearInputLine(false);
     }
 
     private void clearInputLine(boolean prompt) {
-        drawLine((prompt ? readLinePrompt : ""), wrappedContent.length);
-    }
-
-    /**
-     * Appends the parameter to the wrappedContent array and
-     * returns the overflow, in case there was one.
-     *
-     * @param lines the lines to append to the array
-     * @return the overflow (how many lines could not have been appended), 0 if lines fit perfectly fine
-     */
-    private int appendToDisplayContent(String... lines) {
-        // Determine index of first empty space
-        int index = 0;
-        while (index < wrappedContent.length && wrappedContent[index] != null) {
-            index++;
-        }
-
-        // Can't append anything
-        if (index == wrappedContent.length) {
-            return lines.length;
-        }
-
-        // Append
-        for (int pointer = index; pointer < wrappedContent.length && pointer - index < lines.length; pointer++) {
-            wrappedContent[pointer] = lines[pointer - index];
-        }
-
-        // Return overflow
-        return Math.max(0, (index - wrappedContent.length) + lines.length);
+        drawLine((prompt ? readLinePrompt : ""), displayContent.length);
     }
 }
