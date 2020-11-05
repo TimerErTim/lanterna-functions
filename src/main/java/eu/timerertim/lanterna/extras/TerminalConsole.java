@@ -6,6 +6,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
+import eu.timerertim.lanterna.extras.handlers.ConsoleInputListener;
 import eu.timerertim.lanterna.extras.utils.WrappingMode;
 
 import java.io.Closeable;
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class TerminalConsole implements Closeable {
     // Essential components
     private final ContentManager contentManager;
+    private final ConsoleInputListener consoleInput;
     private final String[] displayContent;
     private final Screen screen;
     private final TextGraphics graphics;
@@ -60,6 +62,7 @@ public class TerminalConsole implements Closeable {
         this.wrapping = WrappingMode.SOFTWRAPPING;
         this.contentManager = new ContentManager(screen.getTerminalSize(), wrapping);
         this.displayContent = contentManager.getDisplayContent();
+        this.consoleInput = new ConsoleInputListener(screen);
         this.textColor = TextColor.ANSI.WHITE;
         this.backgroundColor = TextColor.ANSI.BLACK;
         this.scrollPosition = 0;
@@ -160,7 +163,7 @@ public class TerminalConsole implements Closeable {
         clearInputLine(true);
         try {
             update();
-            while ((key = screen.readInput()).getKeyType() != KeyType.Enter) {
+            while ((key = consoleInput.readInput()).getKeyType() != KeyType.Enter) {
                 if (key.getKeyType() == KeyType.Backspace) {
                     input.reverse().deleteCharAt(0).reverse();
                 } else if (key.getKeyType() == KeyType.Character) {
@@ -257,6 +260,7 @@ public class TerminalConsole implements Closeable {
      */
     public void stopScreen() {
         try {
+            consoleInput.close();
             screen.close();
         } catch (IOException e) {
             screen.clear();
