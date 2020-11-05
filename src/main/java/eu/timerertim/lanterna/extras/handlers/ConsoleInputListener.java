@@ -4,7 +4,7 @@ import com.googlecode.lanterna.input.InputProvider;
 import com.googlecode.lanterna.input.KeyStroke;
 
 public class ConsoleInputListener extends AbstractInputListener {
-    protected ConsoleInputListener(InputProvider input) {
+    public ConsoleInputListener(InputProvider input) {
         super(input);
     }
 

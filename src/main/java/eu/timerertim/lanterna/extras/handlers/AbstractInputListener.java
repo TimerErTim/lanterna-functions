@@ -24,7 +24,9 @@ abstract class AbstractInputListener implements InputListener {
 
         // Waiting for input
         try {
-            helperThread.wait();
+            synchronized (helperThread) {
+                helperThread.wait();
+            }
         } catch (InterruptedException e) {
             return latestKey;
         }
@@ -48,7 +50,9 @@ abstract class AbstractInputListener implements InputListener {
                 if (processInput(key)) {
                     if (latestKey == null && helperThread != null) {
                         latestKey = key;
-                        helperThread.notify();
+                        synchronized (helperThread) {
+                            helperThread.notify();
+                        }
                     } else {
                         latestKey = key;
                     }
