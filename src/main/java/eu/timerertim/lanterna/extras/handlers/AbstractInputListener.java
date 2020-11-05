@@ -13,7 +13,8 @@ abstract class AbstractInputListener implements InputListener {
 
     protected AbstractInputListener(InputProvider input) {
         this.input = input;
-        (thisThread = new Thread(this)).start();
+        (thisThread = new Thread(this)).setDaemon(true);
+        thisThread.start();
     }
 
     @Override
