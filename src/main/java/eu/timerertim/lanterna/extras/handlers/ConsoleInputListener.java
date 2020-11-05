@@ -10,6 +10,6 @@ public class ConsoleInputListener extends AbstractInputListener {
 
     @Override
     protected boolean processInput(KeyStroke key) {
-        return false;
+        return true;
     }
 }
