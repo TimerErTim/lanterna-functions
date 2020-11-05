@@ -164,7 +164,7 @@ public class TerminalConsole implements Closeable {
         try {
             update();
             while ((key = consoleInput.readInput()).getKeyType() != KeyType.Enter) {
-                if (key.getKeyType() == KeyType.Backspace) {
+                if (key.getKeyType() == KeyType.Backspace && input.length() > 0) {
                     input.reverse().deleteCharAt(0).reverse();
                 } else if (key.getKeyType() == KeyType.Character) {
                     input.append(key.getCharacter());
