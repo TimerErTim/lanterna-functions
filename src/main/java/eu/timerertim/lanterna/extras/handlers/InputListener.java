@@ -2,6 +2,7 @@ package eu.timerertim.lanterna.extras.handlers;
 
 import com.googlecode.lanterna.input.KeyStroke;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -13,7 +14,7 @@ import java.io.IOException;
  * through the functions defined in the {@link InputListener}
  * interface.
  */
-public interface InputListener extends Runnable {
+public interface InputListener extends Runnable, Closeable {
     /**
      * Returns the next {@code Key} provided by the input queue from now on, blocking until that very moment.
      * The input queue is provided by the {@link com.googlecode.lanterna.input.InputProvider InputProvider} this
@@ -36,9 +37,11 @@ public interface InputListener extends Runnable {
      */
     KeyStroke pollInput() throws IOException;
 
+
     /**
      * Closes this InputListener and releasing it's resources.
      * It stops its activity and stops underlying threads.
      */
+    @Override
     void close();
 }
