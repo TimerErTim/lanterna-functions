@@ -34,7 +34,6 @@ public class TerminalConsole implements Closeable {
     private String readLinePrompt;
     private boolean closed;
     //TODO: Implement autoupdating
-    //TODO: Add softwrapping
 
     /**
      * Creates a new TerminalConsole object and prepares the given {@code Screen} object.
