@@ -158,13 +158,15 @@ public class ScreenConsole extends AbstractConsole {
     /**
      * {@inheritDoc}
      * <p>
-     * Basically the same as calling {@link ScreenConsole#stopScreen()} but has no effect on second call
+     * Basically the same as calling {@link ScreenConsole#stopScreen()} and closing
+     * internal objects but has no effect on second call
      * as it is specified this way in the {@code Closeable} interface.
      */
     @Override
     public void close() {
         if (!closed) {
             stopScreen();
+            consoleInput.close();
             closed = true;
         }
     }

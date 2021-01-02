@@ -66,9 +66,11 @@ abstract class AbstractInputListener implements InputListener {
 
     @Override
     public void close() {
-        thisThread.interrupt();
-        helperThread.notify();
-        helperThread = null;
+        if (thisThread.isAlive()) {
+            thisThread.interrupt();
+            helperThread.notify();
+            helperThread = null;
+        }
     }
 
     /**
