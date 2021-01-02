@@ -1,5 +1,6 @@
 package eu.timerertim.lanterna.extras.console;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -98,7 +99,7 @@ public class ScreenConsole extends AbstractConsole {
         KeyStroke key;
 
         // Read user input
-        //TODO: Add CursorPosition
+        screen.setCursorPosition(new TerminalPosition(readLinePrompt.length(), screen.getTerminalSize().getRows()));
         clearInputLine(true);
         try {
             update();
@@ -110,7 +111,8 @@ public class ScreenConsole extends AbstractConsole {
                 }
                 // Give user feedback
                 String inputLine = readLinePrompt + input.toString();
-                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns(), 0)), screen.getTerminalSize().getRows() - 1);
+                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns() + 1, 0)), screen.getTerminalSize().getRows() - 1);
+                screen.setCursorPosition(screen.getCursorPosition().withColumn(Math.min(inputLine.length(), screen.getTerminalSize().getColumns())));
                 update();
             }
 
