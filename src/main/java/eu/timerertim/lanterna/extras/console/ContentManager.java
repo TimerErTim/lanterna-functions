@@ -1,4 +1,4 @@
-package eu.timerertim.lanterna.extras;
+package eu.timerertim.lanterna.extras.console;
 
 import com.googlecode.lanterna.TerminalSize;
 import eu.timerertim.lanterna.extras.utils.WrappingMode;

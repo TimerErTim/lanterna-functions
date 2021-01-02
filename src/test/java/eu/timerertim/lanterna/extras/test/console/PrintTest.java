@@ -1,13 +1,13 @@
 package eu.timerertim.lanterna.extras.test.console;
 
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import eu.timerertim.lanterna.extras.TerminalConsole;
+import eu.timerertim.lanterna.extras.console.ScreenConsole;
 
 import java.io.IOException;
 
 public class PrintTest {
     public static void main(String... args) throws IOException, InterruptedException {
-        TerminalConsole console = new TerminalConsole(new DefaultTerminalFactory().createScreen(), false);
+        ScreenConsole console = new ScreenConsole(new DefaultTerminalFactory().createScreen(), false);
         console.print("Test");
         console.print(" abstand ");
         console.println("Test 1");
