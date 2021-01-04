@@ -96,6 +96,7 @@ public class ScreenConsole extends AbstractConsole {
     @Override
     public String readLine() {
         StringBuilder input = new StringBuilder();
+        int selectedPos = 0;
         KeyStroke key;
 
         // Read user input
@@ -104,15 +105,23 @@ public class ScreenConsole extends AbstractConsole {
         try {
             update();
             while ((key = consoleInput.readInput()).getKeyType() != KeyType.Enter) {
-                if (key.getKeyType() == KeyType.Backspace && input.length() > 0) {
-                    input.reverse().deleteCharAt(0).reverse();
-                } else if (key.getKeyType() == KeyType.Character) {
-                    input.append(key.getCharacter());
+                if (key.getKeyType() == KeyType.Character) {
+                    input.insert(selectedPos++, key.getCharacter());
+                } else if (key.getKeyType() == KeyType.Backspace && selectedPos > 0) {
+                    input.deleteCharAt(--selectedPos);
+                } else if (key.getKeyType() == KeyType.Delete && selectedPos < input.length()) {
+                    input.deleteCharAt(selectedPos);
+                } else if (key.getKeyType() == KeyType.ArrowLeft && selectedPos > 0) {
+                    selectedPos--;
+                } else if (key.getKeyType() == KeyType.ArrowRight && selectedPos < input.length()) {
+                    selectedPos++;
                 }
+
                 // Give user feedback
                 String inputLine = readLinePrompt + input.toString();
-                drawLine(inputLine.substring(Math.max(inputLine.length() - screen.getTerminalSize().getColumns() + 1, 0)), screen.getTerminalSize().getRows() - 1);
-                screen.setCursorPosition(screen.getCursorPosition().withColumn(Math.min(inputLine.length(), screen.getTerminalSize().getColumns())));
+                int offset = (selectedPos / screen.getTerminalSize().getColumns()) * screen.getTerminalSize().getColumns();
+                drawLine(inputLine.substring(offset), screen.getTerminalSize().getRows() - 1);
+                screen.setCursorPosition(screen.getCursorPosition().withColumn(readLinePrompt.length() + selectedPos - offset));
                 update();
             }
 
