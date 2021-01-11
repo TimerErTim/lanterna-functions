@@ -119,7 +119,7 @@ public class ScreenConsole extends AbstractConsole {
 
                 // Give user feedback
                 String inputLine = readLinePrompt + input.toString();
-                int offset = (selectedPos / screen.getTerminalSize().getColumns()) * screen.getTerminalSize().getColumns();
+                int offset = ((selectedPos + readLinePrompt.length()) / screen.getTerminalSize().getColumns()) * screen.getTerminalSize().getColumns();
                 drawLine(inputLine.substring(offset), screen.getTerminalSize().getRows() - 1);
                 screen.setCursorPosition(screen.getCursorPosition().withColumn(readLinePrompt.length() + selectedPos - offset));
                 update();
