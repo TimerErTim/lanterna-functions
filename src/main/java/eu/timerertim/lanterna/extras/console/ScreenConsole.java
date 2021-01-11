@@ -7,6 +7,8 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TabBehaviour;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import eu.timerertim.lanterna.extras.handlers.ConsoleInputListener;
 
 import java.io.IOException;
@@ -192,6 +194,13 @@ public class ScreenConsole extends AbstractConsole {
             screen.close();
         } catch (IOException e) {
             screen.clear();
+        }
+    }
+
+    @Override
+    public void setSwingTitle(String title) {
+        if (screen instanceof TerminalScreen && ((TerminalScreen) screen).getTerminal() instanceof SwingTerminalFrame) {
+            ((SwingTerminalFrame) ((TerminalScreen) screen).getTerminal()).setTitle(title);
         }
     }
 

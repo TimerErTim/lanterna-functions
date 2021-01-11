@@ -8,6 +8,7 @@ import java.io.IOException;
 public class PrintlnTest {
     public static void main(String... args) throws IOException {
         ScreenConsole console = new ScreenConsole(new DefaultTerminalFactory().createScreen(), false);
+        console.setSwingTitle("PrintlnTest");
         console.println("Test");
         console.println("Test 2");
         console.println("Test 3");

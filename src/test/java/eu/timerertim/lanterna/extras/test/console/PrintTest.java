@@ -8,6 +8,7 @@ import java.io.IOException;
 public class PrintTest {
     public static void main(String... args) throws IOException, InterruptedException {
         ScreenConsole console = new ScreenConsole(new DefaultTerminalFactory().createScreen(), false);
+        console.setSwingTitle("PrintTest");
         console.print("Test");
         console.print(" abstand ");
         console.println("Test 1");

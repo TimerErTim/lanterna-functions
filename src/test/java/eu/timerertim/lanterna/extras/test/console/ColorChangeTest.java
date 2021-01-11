@@ -9,6 +9,7 @@ import java.io.IOException;
 public class ColorChangeTest {
     public static void main(String[] args) throws IOException {
         ScreenConsole console = new ScreenConsole(new DefaultTerminalFactory().createScreen(), false);
+        console.setSwingTitle("ColorChangeTest");
         console.println("Testing");
         console.update();
         console.setBackgroundColor(TextColor.ANSI.BLUE);

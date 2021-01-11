@@ -91,6 +91,14 @@ public interface Console extends Closeable {
     void close();
 
     /**
+     * In case the console is emulated using Swing, this method can
+     * be used to change the title of the resulting Swing frame.
+     *
+     * @param title the new title
+     */
+    void setSwingTitle(String title);
+
+    /**
      * Returns the autoUpdate state
      *
      * @return the autoUpdate boolean
